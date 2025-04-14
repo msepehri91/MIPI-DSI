@@ -1,0 +1,27 @@
+import time, logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def connect_instrument():
+    # Replace with actual VISA address or SDK call
+    logging.info("Connecting to oscilloscope...")
+    return None  # Placeholder for instrument object
+
+def measure_clock_params(scope):
+    # Replace with actual SCPI or API calls
+    freq = 500e6         # Example: 500 MHz
+    duty = 50.2          # Duty cycle in %
+    jitter_rms = 2.5e-12 # RMS jitter in seconds
+    logging.info(f"Freq: {freq/1e6:.2f} MHz | Duty: {duty:.1f}% | Jitter: {jitter_rms*1e12:.2f} ps")
+    return freq, duty, jitter_rms
+
+def main():
+    scope = connect_instrument()
+    logging.info("Starting clock stability test...")
+    for _ in range(5):  # Check over 5 intervals
+        measure_clock_params(scope)
+        time.sleep(60)  # Measure every minute
+    logging.info("Test complete.")
+
+if __name__ == "__main__":
+    main()
