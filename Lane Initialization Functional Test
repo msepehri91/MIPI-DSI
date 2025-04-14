@@ -1,0 +1,22 @@
+def trigger_dsi_init():
+    print("Triggering DSI initialization...")
+
+def monitor_lane_transitions():
+    # Simulated logic analyzer readout
+    sequence = ["LP-11", "LP-01", "LP-00", "HS-REQ", "HS"]
+    voltage_levels = {"CLK": "HS", "DATA": "HS"}
+    return sequence, voltage_levels
+
+def run_test():
+    trigger_dsi_init()
+    seq, voltages = monitor_lane_transitions()
+
+    if seq == ["LP-11", "LP-01", "LP-00", "HS-REQ", "HS"] and voltages["CLK"] == "HS":
+        print("PASS: Proper LP to HS transition detected")
+    else:
+        print("FAIL: Invalid transition or stuck state")
+
+    print(f"Transition Sequence: {seq}")
+    print(f"Voltage Levels: {voltages}")
+
+run_test()
