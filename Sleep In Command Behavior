@@ -1,0 +1,23 @@
+import time
+
+def send_dcs_sleep_in():
+    print("Sending DCS 0x10 (Sleep In) command...")
+
+def observe_panel_state():
+    # Simulated result after sleep command
+    display_off = True
+    hs_activity = False
+    power_dropped = True
+    return display_off, hs_activity, power_dropped
+
+def run_test():
+    send_dcs_sleep_in()
+    time.sleep(0.01)  # 10 ms wait
+    display, hs, power = observe_panel_state()
+
+    print("Display Off:", display)
+    print("HS Activity:", "None" if not hs else "Active")
+    print("Power Drop:", power)
+    print("PASS" if display and not hs else "FAIL")
+
+run_test()
