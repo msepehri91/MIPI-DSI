@@ -1,0 +1,19 @@
+import time
+
+def measure_jitter():
+    # Replace with real scope API/SCPI queries
+    jitter_pp = 18.2e-12    # 18.2 ps
+    jitter_rms = 3.4e-12    # 3.4 ps
+    jitter_cycle = 2.1e-12  # 2.1 ps
+    return jitter_pp, jitter_rms, jitter_cycle
+
+pp, rms, cycle = measure_jitter()
+
+print(f"Peak-to-Peak Jitter: {pp*1e12:.2f} ps")
+print(f"RMS Jitter: {rms*1e12:.2f} ps")
+print(f"Cycle-to-Cycle Jitter: {cycle*1e12:.2f} ps")
+
+if pp < 20e-12 and rms < 5e-12:
+    print("PASS: Jitter within spec")
+else:
+    print("FAIL: Jitter exceeds limits")
