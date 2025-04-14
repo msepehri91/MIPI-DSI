@@ -1,0 +1,16 @@
+def reset_dut():
+    print("Power-cycling DUT and resetting DSI PHY...")
+
+def measure_lp11_hold():
+    # Simulated LP-11 hold time in microseconds
+    hold_time_us = 120
+    glitches = False
+    return hold_time_us, glitches
+
+def run_test():
+    reset_dut()
+    hold_time, glitches = measure_lp11_hold()
+    print(f"LP-11 Hold Time: {hold_time} µs")
+    print("PASS" if hold_time >= 100 and not glitches else "FAIL")
+
+run_test()
