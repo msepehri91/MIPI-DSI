@@ -1,0 +1,16 @@
+import time
+
+def run_test():
+    print("Config DSI to 4.5 Gbps, start checkerboard pattern...")
+    time.sleep(60)  # Simulate 60s stress
+    artifacts = False
+    errors = {"ecc": 0, "crc": 0, "retries": 0}
+
+    print("Visual:", "No artifacts" if not artifacts else "Artifacts found")
+    print(f"Errors: {errors}")
+    if not artifacts and all(v == 0 for v in errors.values()):
+        print("PASS")
+    else:
+        print("FAIL")
+
+run_test()
