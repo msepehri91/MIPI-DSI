@@ -1,0 +1,19 @@
+import time
+
+nominal = 1.5e9
+readings = []
+
+for _ in range(150):  # 5 min at 2s interval
+    freq = 1.4998e9  # Replace with real measurement
+    readings.append(freq)
+    print(f"{time.strftime('%H:%M:%S')} - {freq/1e6:.3f} MHz")
+    time.sleep(2)
+
+f_min, f_max = min(readings), max(readings)
+f_avg = sum(readings)/len(readings)
+drift = f_max - f_min
+dev = abs(f_avg - nominal) / nominal * 100
+
+print(f"\nMin: {f_min/1e6:.3f} MHz | Max: {f_max/1e6:.3f} MHz")
+print(f"Avg: {f_avg/1e6:.3f} MHz | Drift: {drift/1e6:.2f} MHz")
+print(f"Deviation: {dev:.4f}%")
