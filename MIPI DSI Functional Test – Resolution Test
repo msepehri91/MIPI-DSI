@@ -1,0 +1,11 @@
+import cv2
+
+def check_resolution(img_path, expected):
+    img = cv2.imread(img_path)
+    res = img.shape[1], img.shape[0]  # (width, height)
+    print(f"Captured: {res}, Expected: {expected}")
+    print("PASS" if res == expected else "FAIL")
+
+# Test cases
+check_resolution("capture_1080p.png", (1920, 1080))
+check_resolution("capture_720p.png", (1280, 720))
