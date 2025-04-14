@@ -1,0 +1,18 @@
+import time
+import random
+
+def measure_skew():
+    # Simulated skew value in ps
+    return random.randint(80, 120)  # Example: skew under 150 ps spec
+
+def run_test():
+    for i in range(30):  # 5 min at 10s intervals
+        skew = measure_skew()
+        print(f"Time {i*10}s: Skew = {skew} ps")
+        if skew > 150:
+            print("FAIL: Skew exceeded spec")
+            return
+        time.sleep(10)
+    print("PASS: Skew remained within spec")
+
+run_test()
