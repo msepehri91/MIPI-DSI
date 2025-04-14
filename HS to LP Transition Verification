@@ -1,0 +1,17 @@
+def trigger_oscilloscope():
+    print("Triggered oscilloscope during HS data burst...")
+
+def capture_transition():
+    # Simulated post-HS state
+    clk_lane = "LP-11"
+    data_lane = "LP-00"
+    glitches = False
+    return clk_lane, data_lane, glitches
+
+def run_test():
+    trigger_oscilloscope()
+    clk, data, glitches = capture_transition()
+    print(f"Clock Lane: {clk}, Data Lane: {data}")
+    print("PASS" if clk == "LP-11" and not glitches else "FAIL")
+
+run_test()
