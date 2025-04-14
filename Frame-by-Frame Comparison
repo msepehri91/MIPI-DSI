@@ -1,0 +1,22 @@
+import cv2
+import numpy as np
+
+def load_images(ref_path, captured_path):
+    ref = cv2.imread(ref_path)
+    cap = cv2.imread(captured_path)
+    return ref, cap
+
+def compare_images(img1, img2):
+    if img1.shape != img2.shape:
+        return False
+    diff = cv2.absdiff(img1, img2)
+    return not np.any(diff)
+
+def run_test():
+    ref_img, cap_img = load_images("reference.png", "captured.png")
+    if compare_images(ref_img, cap_img):
+        print("PASS: Captured frame matches reference.")
+    else:
+        print("FAIL: Mismatch detected.")
+
+run_test()
