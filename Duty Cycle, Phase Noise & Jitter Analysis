@@ -1,0 +1,17 @@
+def measure_clock_quality():
+    # Simulated scope measurements
+    duty_cycle = 49.2    # in %
+    jitter_rms = 6.3     # in ps
+    edges_clean = True
+    protocol_errors = 0
+    return duty_cycle, jitter_rms, edges_clean, protocol_errors
+
+def run_test():
+    duty, jitter, edges, errors = measure_clock_quality()
+    print(f"Duty Cycle: {duty}% | Jitter: {jitter} ps | Errors: {errors}")
+    if 45 <= duty <= 55 and jitter < 10 and edges and errors == 0:
+        print("PASS")
+    else:
+        print("FAIL")
+
+run_test()
