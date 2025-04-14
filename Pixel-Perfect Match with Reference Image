@@ -1,0 +1,14 @@
+import cv2
+import numpy as np
+
+ref = cv2.imread("reference.png")
+cap = cv2.imread("captured.png")
+
+if ref.shape != cap.shape:
+    print("FAIL: Image size mismatch")
+else:
+    diff = cv2.absdiff(ref, cap)
+    if np.any(diff):
+        print("FAIL: Pixel mismatch detected")
+    else:
+        print("PASS: Pixel-perfect match")
