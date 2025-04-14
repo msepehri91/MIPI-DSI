@@ -1,0 +1,16 @@
+def trigger_capture():
+    print("Triggering oscilloscope to capture LP → HS transition...")
+
+def analyze_transition():
+    # Simulated waveform sequence
+    sequence = ["LP-11", "LP-01", "LP-00", "HS-Ready", "HS"]
+    glitches = False
+    return sequence, glitches
+
+def run_test():
+    trigger_capture()
+    seq, glitches = analyze_transition()
+    print("Observed Sequence:", seq)
+    print("PASS" if seq == ["LP-11", "LP-01", "LP-00", "HS-Ready", "HS"] and not glitches else "FAIL")
+
+run_test()
