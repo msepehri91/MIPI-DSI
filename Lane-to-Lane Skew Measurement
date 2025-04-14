@@ -1,0 +1,20 @@
+import random
+
+def measure_skew():
+    # Simulated skew values in ps for D0–D3 relative to clock
+    return {
+        "D0": random.randint(-100, 100),
+        "D1": random.randint(-120, 130),
+        "D2": random.randint(-140, 140),
+        "D3": random.randint(-110, 120)
+    }
+
+def run_test():
+    for i in range(3):
+        print(f"\nTest Run {i+1}")
+        skew = measure_skew()
+        print("Skew (ps):", skew)
+        within_spec = all(abs(v) <= 150 for v in skew.values())
+        print("PASS" if within_spec else "FAIL")
+
+run_test()
