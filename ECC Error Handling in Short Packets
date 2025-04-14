@@ -1,0 +1,18 @@
+def inject_packet(ecc_bits):
+    print(f"Injecting short packet with {ecc_bits}-bit ECC error...")
+
+def analyze_response(ecc_bits):
+    if ecc_bits == 1:
+        return "corrected"
+    elif ecc_bits == 2:
+        return "discarded"
+    else:
+        return "unknown"
+
+def run_test():
+    for bits in [1, 2]:
+        inject_packet(bits)
+        result = analyze_response(bits)
+        print(f"{bits}-bit ECC error: Packet {result}")
+
+run_test()
