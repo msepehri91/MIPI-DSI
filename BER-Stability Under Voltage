@@ -1,0 +1,22 @@
+import time, logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+
+VDD_LEVELS = [0.9, 1.0, 1.1]
+TEMPS = ['Cold', 'Room', 'Hot']
+DURATION = 5 * 60  # 5 minutes
+
+def run_test(vdd, temp):
+    logging.info(f"VDD: {vdd}V | Temp: {temp} | Running...")
+    time.sleep(DURATION)  # Simulate run time
+    bits, errors = 1e12, 500  # Dummy data
+    ber = errors / bits
+    logging.info(f"BER: {ber:.2e} | {'Pass' if ber < 1e-7 else 'Fail'}")
+
+def main():
+    for v in VDD_LEVELS:
+        for t in TEMPS:
+            run_test(v, t)
+
+if __name__ == "__main__":
+    main()
