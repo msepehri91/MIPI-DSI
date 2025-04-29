@@ -1,0 +1,82 @@
+from openhtf import Test, PhaseResult
+from openhtf.plugs import user_input
+import sys
+import numpy as np
+from numba import njit
+
+# Define threshold for LP mode command decoding
+THRESH = 0.7
+
+# MIPI DSI decoding function
+@njit
+def process_one_dataset(data):
+    last_p = 0
+    last_n = 0
+    reg = 0b0
+    count = -1
+    out = []
+    for i in range(data.shape[0]):
+        p = data[i, 0]
+        n = data[i, 1]
+        if p > THRESH and last_p < THRESH:
+            if count != -1:
+                count += 1
+            reg |= (0b1 << 8)
+            reg >>= 1
+        elif n > THRESH and last_n < THRESH:
+            if count != -1:
+                count += 1
+            reg >>= 1
+
+        if count == -1 and reg == 0b10000111:
+            count = 0
+
+        if count == 8:
+            count = 0
+            out.append(reg)
+            reg = 0b0
+
+        if count != -1 and p > THRESH and n > THRESH:
+            count = -1
+            out.append(-1)
+
+        last_p = p
+        last_n = n
+
+    return out
+
+# Phase to decode MIPI DSI data from file input
+def decode_mipi_dsi(test):
+    for filename in sys.argv[1:]:
+        print("Loading", filename)
+        try:
+            # Load captured data from file
+            data = np.loadtxt(filename, delimiter=',', dtype=np.float32, usecols=range(0,2), skiprows=10)
+            print("Processing", filename)
+            out = process_one_dataset(data)
+            # Print decoded values
+            for item in out:
+                if item != -1:
+                    print(hex(item), end=" ")
+                else:
+                    print()
+        except Exception as e:
+            print(f"Error processing file {filename}: {e}")
+            return PhaseResult.FAIL
+
+    return PhaseResult.CONTINUE
+
+# Phase to power on the device under test
+def power_on(test):
+    print("Powering on the DUT...")
+    # Add power-on steps here (e.g., initializing equipment, triggering power)
+    return PhaseResult.CONTINUE
+
+def main():
+    # Define test with power_on and decoding phases
+    test = Test(power_on, decode_mipi_dsi)
+    # Run the test with user prompt for starting
+    test.execute(test_start=user_input.prompt_for_test_start())  # Prompt at start
+
+if __name__ == '__main__':
+    main()
