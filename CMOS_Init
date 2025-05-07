@@ -1,0 +1,43 @@
+import pyvisa
+from pymeasure.instruments import Instrument
+from time import sleep
+
+# Set up VISA resource manager
+rm = pyvisa.ResourceManager()
+
+# Connect to instruments (update resource names as needed)
+spi_device = Instrument("USB0::0x1AB1::0x0588::DS1ZA171800000::INSTR")
+power_supply = Instrument("USB0::0x2A8D::0x0401::MY1234567::INSTR")
+
+
+def run_test():
+    # Power On Backplane
+    power_supply.write("OUTP ON")
+    print("Backplane Powered ON")
+    sleep(1)
+
+    # Load Firmware/EEPROM
+    spi_device.write("LOAD_FIRMWARE_COMMAND")
+    if "OK" in spi_device.ask("READ_FIRMWARE_STATUS"):
+        print("Firmware Loaded Successfully")
+    else:
+        print("Firmware Load Failed")
+
+    # Driver IC Initialization
+    spi_device.write("GAMMA_SETUP_COMMAND")
+    spi_device.write("PIXEL_MAPPING_COMMAND")
+    spi_device.write("TIMING_SETUP_COMMAND")
+    if "OK" in spi_device.ask("READ_INIT_STATUS"):
+        print("Driver IC Initialized Successfully")
+    else:
+        print("Driver IC Initialization Failed")
+
+    # Register Verification
+    brightness = spi_device.ask("READ_BRIGHTNESS")
+    refresh_rate = spi_device.ask("READ_REFRESH_RATE")
+    power_mode = spi_device.ask("READ_POWER_MODE")
+    print(f"Brightness: {brightness}, Refresh Rate: {refresh_rate}, Power Mode: {power_mode}")
+
+
+if __name__ == "__main__":
+    run_test()
