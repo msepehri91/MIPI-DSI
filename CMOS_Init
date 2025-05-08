@@ -1,6 +1,8 @@
 import pyvisa
 from pymeasure.instruments import Instrument
 from time import sleep
+import openhtf as htf
+from openhtf.util import units
 
 # Set up VISA resource manager
 rm = pyvisa.ResourceManager()
@@ -10,34 +12,66 @@ spi_device = Instrument("USB0::0x1AB1::0x0588::DS1ZA171800000::INSTR")
 power_supply = Instrument("USB0::0x2A8D::0x0401::MY1234567::INSTR")
 
 
-def run_test():
-    # Power On Backplane
+@htf.PhaseOptions()
+def power_on_backplane(test):
     power_supply.write("OUTP ON")
-    print("Backplane Powered ON")
+    test.logger.info("Backplane Powered ON")
     sleep(1)
+    return htf.PhaseResult.CONTINUE
 
-    # Load Firmware/EEPROM
+
+@htf.PhaseOptions()
+def load_firmware(test):
     spi_device.write("LOAD_FIRMWARE_COMMAND")
-    if "OK" in spi_device.ask("READ_FIRMWARE_STATUS"):
-        print("Firmware Loaded Successfully")
+    response = spi_device.ask("READ_FIRMWARE_STATUS")
+    if "OK" in response:
+        test.logger.info("Firmware Loaded Successfully")
+        test.measurements.firmware_status = "OK"
     else:
-        print("Firmware Load Failed")
+        test.logger.error("Firmware Load Failed")
+        test.measurements.firmware_status = "FAIL"
+    return htf.PhaseResult.CONTINUE
 
-    # Driver IC Initialization
+
+@htf.PhaseOptions()
+def initialize_driver_ic(test):
     spi_device.write("GAMMA_SETUP_COMMAND")
     spi_device.write("PIXEL_MAPPING_COMMAND")
     spi_device.write("TIMING_SETUP_COMMAND")
-    if "OK" in spi_device.ask("READ_INIT_STATUS"):
-        print("Driver IC Initialized Successfully")
+    response = spi_device.ask("READ_INIT_STATUS")
+    if "OK" in response:
+        test.logger.info("Driver IC Initialized Successfully")
+        test.measurements.init_status = "OK"
     else:
-        print("Driver IC Initialization Failed")
+        test.logger.error("Driver IC Initialization Failed")
+        test.measurements.init_status = "FAIL"
+    return htf.PhaseResult.CONTINUE
 
-    # Register Verification
+
+@htf.PhaseOptions()
+def verify_registers(test):
     brightness = spi_device.ask("READ_BRIGHTNESS")
     refresh_rate = spi_device.ask("READ_REFRESH_RATE")
     power_mode = spi_device.ask("READ_POWER_MODE")
-    print(f"Brightness: {brightness}, Refresh Rate: {refresh_rate}, Power Mode: {power_mode}")
+
+    test.measurements.brightness = float(brightness)
+    test.measurements.refresh_rate = float(refresh_rate)
+    test.measurements.power_mode = power_mode
+
+    test.logger.info(f"Brightness: {brightness}, Refresh Rate: {refresh_rate}, Power Mode: {power_mode}")
+    return htf.PhaseResult.CONTINUE
+
+
+def main():
+    test = htf.Test(
+        power_on_backplane,
+        load_firmware,
+        initialize_driver_ic,
+        verify_registers,
+    )
+    test.execute(test_start=lambda: "PCB001")  # Replace with actual DUT ID
 
 
 if __name__ == "__main__":
-    run_test()
+    main()
+
