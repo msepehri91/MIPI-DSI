@@ -1,4 +1,3 @@
-import pyvisa
 from pymeasure.instruments import Instrument
 from time import sleep
 import openhtf as htf
